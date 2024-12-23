@@ -3,9 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get URL Parameter</title>
+    <title>Mock API with JavaScript</title>
 </head>
 <body>
-    <script src="javascript.js"></script>
+    <h1>Mock API Example</h1>
+    <pre id="output"></pre>
+
+    <script>
+        // Mock API data
+        const mockApiData = {
+            users: [
+                { id: 1, name: "Alice", email: "alice@example.com" },
+                { id: 2, name: "Bob", email: "bob@example.com" },
+                { id: 3, name: "Charlie", email: "charlie@example.com" }
+            ]
+        };
+
+        // Function to handle "API requests"
+        async function mockFetch(url) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (url === "/api/users") {
+                        resolve({ 
+                            status: 200, 
+                            json: () => Promise.resolve(mockApiData.users) 
+                        });
+                    } else {
+                        reject({ status: 404, message: "Not Found" });
+                    }
+                }, 500); // Simulate network delay
+            });
+        }
+
+        // Automatically fetch data when page loads
+        window.addEventListener('load', async () => {
+            try {
+                const response = await mockFetch('/api/users');
+                if (response.status === 200) {
+                    const data = await response.json();
+                    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                document.getElementById('output').textContent = JSON.stringify(error, null, 2);
+            }
+        });
+    </script>
 </body>
 </html>
